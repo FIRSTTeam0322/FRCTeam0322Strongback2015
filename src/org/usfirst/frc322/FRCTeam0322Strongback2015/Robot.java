@@ -2,15 +2,19 @@
 package org.usfirst.frc322.FRCTeam0322Strongback2015;
 
 import org.strongback.Strongback;
+import org.strongback.components.AngleSensor;
 import org.strongback.components.Motor;
 import org.strongback.components.ui.ContinuousRange;
 import org.strongback.components.Switch;
+import org.strongback.components.ThreeAxisAccelerometer;
 import org.strongback.components.ui.FlightStick;
 import org.strongback.components.ui.Gamepad;
 import org.strongback.drive.MecanumDrive;
 import org.strongback.hardware.Hardware;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
 
 public class Robot extends IterativeRobot {
 	
@@ -20,11 +24,17 @@ public class Robot extends IterativeRobot {
 	private static final int LR_MOTOR_PORT = 2;
 	private static final int RF_MOTOR_PORT = 3;
 	private static final int RR_MOTOR_PORT = 4;
+	private static final SPI.Port ACCEL_PORT = SPI.Port.kOnboardCS1;
+	private static final Range ACCEL_RANGE = Range.k2G;
+	private static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
 
 	private MecanumDrive drive;
 	private ContinuousRange driveX;
 	private ContinuousRange driveY;
 	private ContinuousRange driveR;
+	
+	private ThreeAxisAccelerometer accel;
+	private AngleSensor gyro;
 
 	private Switch brake;
 	private Switch liftUp;
@@ -42,7 +52,9 @@ public class Robot extends IterativeRobot {
     	Motor lr = Hardware.Motors.talon(LR_MOTOR_PORT);
     	Motor rf = Hardware.Motors.talon(RF_MOTOR_PORT).invert();
     	Motor rr = Hardware.Motors.talon(RR_MOTOR_PORT).invert();
-    	drive = new MecanumDrive(lf,lr,rf,rr,Hardware.AngleSensors.gyroscope(0));
+    	accel = Hardware.Accelerometers.accelerometer(ACCEL_PORT, ACCEL_RANGE);
+    	gyro = Hardware.AngleSensors.gyroscope(GYRO_PORT);
+    	drive = new MecanumDrive(lf,lr,rf,rr,gyro);
     	
     	FlightStick driveStick = Hardware.HumanInterfaceDevices.logitechAttack3D(DRIVE_STICK_PORT);
     	Gamepad manipulatorStick = Hardware.HumanInterfaceDevices.logitechDualAction(MANIPULATOR_STICK_PORT);
